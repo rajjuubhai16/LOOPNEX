@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loopnex — Grow Without Limits</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- CSS File Connection -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased flex flex-col min-h-screen bg-zinc-950 text-white selection:bg-sky-500 selection:text-white">
+
+  <!-- ================= 1. DASHBOARD / SIGN IN SCREEN ================= -->
+  <div id="page-dashboard" class="page-section active-page fixed inset-0 z-[100] h-screen w-screen flex items-center justify-center bg-black">
+    
+    <!-- Background Video -->
+    <div class="absolute inset-0 w-full h-full overflow-hidden z-0">
+      <video autoplay loop muted playsinline class="w-full h-full object-cover">
+        <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260703_053131_1ec3dd1c-d627-44fb-ab20-6e1fce41b0d5.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
+    </div>
+
+    <!-- Centered Content Wrapper -->
+    <div class="relative z-10 w-full max-w-md mx-auto text-center flex flex-col items-center justify-center px-6">
+      
+      <!-- Big Rotating Flower Logo -->
+      <div class="mb-4 flex justify-center w-full">
+        <svg width="240" height="200" viewBox="8 4 160 160">
+          <defs>
+            <linearGradient id="lx-gold-lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFC93C" /><stop offset="100%" stop-color="#FF9F1C" /></linearGradient>
+            <linearGradient id="lx-yellow-lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFF04C" /><stop offset="100%" stop-color="#FFD93C" /></linearGradient>
+            <linearGradient id="lx-brown-lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#A67C52" /><stop offset="100%" stop-color="#6B4423" /></linearGradient>
+            <linearGradient id="lx-blue-lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2E9BF5" /><stop offset="100%" stop-color="#6FD4E8" /></linearGradient>
+            <linearGradient id="lx-green-lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1FA35C" /><stop offset="100%" stop-color="#14532D" /></linearGradient>
+          </defs>
+          <g transform="translate(80,80)">
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="0;360" keyTimes="0;1" calcMode="spline" keySplines="0.37 0 0.63 1" dur="14s" repeatCount="indefinite" />
+              <g transform="rotate(0)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-gold-lg)" /></g>
+              <g transform="rotate(72)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-yellow-lg)" /></g>
+              <g transform="rotate(144)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-brown-lg)" /></g>
+              <g transform="rotate(216)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-blue-lg)" /></g>
+              <g transform="rotate(288)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-green-lg)" /></g>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <h1 class="text-7xl sm:text-8xl font-serif-custom text-white tracking-tight mb-8 text-center drop-shadow-xl w-full">
+        LOOPNEX<sup class="text-xl align-super">®</sup>
+      </h1>
+      <p class="text-2xl sm:text-3xl font-serif-custom text-[#FFC93C] italic tracking-wide mb-12 drop-shadow-md">
+        Grow without limits.
+      </p>
+
+      <form class="w-full space-y-4 flex flex-col items-center justify-center" onsubmit="handleLogin(event)">
+        <div class="w-full">
+          <input id="user-email-input" type="email" placeholder="Enter your email (e.g. name@gmail.com)" class="w-full bg-black/40 border border-white/30 backdrop-blur-md rounded-2xl px-6 py-4 text-white text-base text-center placeholder-zinc-300 focus:outline-none focus:border-[#FFC93C] shadow-lg" required />
+          <p id="login-error-msg" class="text-xs text-red-300 mt-2 font-medium hidden text-center drop-shadow"></p>
+        </div>
+        <button type="submit" class="liquid-glass rounded-2xl w-full py-4 text-white text-lg font-semibold hover:scale-[1.02] transition-transform shadow-[0_0_25px_rgba(255,201,60,0.6)] border border-[#FFC93C]/50 bg-gradient-to-r from-amber-500/20 to-yellow-500/20">
+          Sign In / Sign Up →
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ================= 2. MAIN HEADER NAVBAR ================= -->
+  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 pt-4 hidden">
+    <nav class="glass-panel rounded-2xl flex justify-between items-center px-6 sm:px-8 py-4 max-w-7xl mx-auto border border-sky-200 bg-white/80 backdrop-blur-md shadow-sm">
+      
+      <!-- Logo -->
+      <a href="javascript:void(0)" onclick="switchPage('home')" class="flex items-center gap-3.5 group">
+        <svg width="40" height="40" viewBox="0 0 160 160">
+          <defs>
+            <linearGradient id="lx-gold-orig" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFC93C" /><stop offset="100%" stop-color="#FF9F1C" /></linearGradient>
+            <linearGradient id="lx-yellow-orig" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFF04C" /><stop offset="100%" stop-color="#FFD93C" /></linearGradient>
+            <linearGradient id="lx-brown-orig" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#A67C52" /><stop offset="100%" stop-color="#6B4423" /></linearGradient>
+            <linearGradient id="lx-blue-orig" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2E9BF5" /><stop offset="100%" stop-color="#6FD4E8" /></linearGradient>
+            <linearGradient id="lx-green-orig" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1FA35C" /><stop offset="100%" stop-color="#14532D" /></linearGradient>
+          </defs>
+          <g transform="translate(80,80)">
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="0;360" keyTimes="0;1" calcMode="spline" keySplines="0.37 0 0.63 1" dur="16s" repeatCount="indefinite" />
+              <g transform="rotate(0)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-gold-orig)" /></g>
+              <g transform="rotate(72)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-yellow-orig)" /></g>
+              <g transform="rotate(144)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-brown-orig)" /></g>
+              <g transform="rotate(216)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-blue-orig)" /></g>
+              <g transform="rotate(288)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-green-orig)" /></g>
+            </g>
+          </g>
+        </svg>
+        <span class="text-3xl font-serif-custom text-slate-900 tracking-tight">Loopnex<sup class="text-[10px]">®</sup></span>
+      </a>
+
+      <div class="hidden lg:flex items-center gap-5 text-sm">
+        <a href="javascript:void(0)" onclick="switchPage('home')" class="text-slate-600 hover:text-sky-600 transition-colors">Home</a>
+        <a href="javascript:void(0)" onclick="switchPage('studio')" class="text-slate-600 hover:text-sky-600 transition-colors">Studio</a>
+        <a href="javascript:void(0)" onclick="switchPage('about')" class="text-slate-600 hover:text-sky-600 transition-colors">About</a>
+        <a href="javascript:void(0)" onclick="switchPage('offers')" class="text-sky-600 hover:text-sky-700 font-medium">Discount & Offers</a>
+        <a href="javascript:void(0)" onclick="switchPage('reach')" class="text-slate-600 hover:text-sky-600 transition-colors">Reach Us</a>
+        <a href="javascript:void(0)" onclick="switchPage('terms')" class="text-slate-600 hover:text-sky-600 transition-colors">Terms & Guidelines</a>
+      </div>
+
+      <div id="user-profile-badge" class="liquid-glass rounded-full px-4 py-2 text-xs text-sky-800 flex items-center gap-2 font-medium bg-sky-50 border border-sky-200 shadow-sm">
+        <i data-lucide="user" class="w-3.5 h-3.5"></i>
+        <span id="saved-email-display">user@gmail.com</span>
+        <button onclick="handleLogout()" title="Logout" class="text-slate-400 hover:text-red-500 ml-1">✕</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ================= 3. HOME PAGE ================= -->
+  <div id="page-home" class="page-section flex-col bg-[#f0f9ff]">
+    <section class="relative min-h-screen flex flex-col justify-center items-center text-center px-6 pt-32 pb-20 bg-zinc-950 text-white">
+      <div class="absolute inset-0 w-full h-full overflow-hidden z-0">
+        <video autoplay loop muted playsinline class="w-full h-full object-cover">
+          <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4" />
+        </video>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-[3px]"></div>
+      </div>
+      <div class="relative z-10 max-w-5xl mx-auto flex flex-col items-center">
+        <p class="text-xs uppercase tracking-[0.3em] text-zinc-300 mb-4 font-medium">EMPOWERING AMBITIOUS FOUNDERS</p>
+        <h1 class="text-5xl sm:text-7xl md:text-8xl font-serif-custom font-normal text-white leading-[0.95]">
+          Where small brands<br />
+          <span class="text-[#FFC93C] italic">grow without limits.</span>
+        </h1>
+        <p class="text-zinc-300 text-base sm:text-lg max-w-2xl mt-8 leading-relaxed">
+          We build the complete digital engine for ambitious founders — AI-integrated Websites, Chatbots, AI Loop and Meta Ads that turn attention into leads, bookings and sales.
+        </p>
+        <div class="flex gap-4 mt-10">
+          <a href="javascript:void(0)" onclick="switchPage('reach')" class="liquid-glass rounded-full px-8 py-4 text-base text-white hover:scale-[1.03] transition-transform shadow-[0_0_25px_rgba(56,189,248,0.7)] border border-sky-400/60 bg-sky-500/20 font-semibold">Grow Now →</a>
+          <a href="javascript:void(0)" onclick="switchPage('studio')" class="glass-panel rounded-full px-8 py-4 text-base text-zinc-300 hover:text-white bg-white/5 border border-white/10 transition-colors">Explore Studio ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="relative z-10 py-8 border-y border-sky-200 overflow-hidden bg-sky-100 text-sky-900">
+      <div class="animate-marquee">
+        <div class="flex items-center space-x-12 whitespace-nowrap">
+          <span class="text-5xl font-serif-custom">Leads</span><span class="text-sky-500">✦</span>
+          <span class="text-5xl font-serif-custom">Bookings</span><span class="text-sky-500">✦</span>
+          <span class="text-5xl font-serif-custom">Followers</span><span class="text-sky-500">✦</span>
+          <span class="text-5xl font-serif-custom">Sales</span><span class="text-sky-500">✦</span>
+          <span class="text-5xl font-serif-custom">Automation</span><span class="text-sky-500">✦</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Value Section -->
+    <section class="relative z-10 py-24 px-6 max-w-7xl mx-auto w-full text-slate-900">
+      <p class="text-xs uppercase tracking-[0.2em] text-sky-700 mb-2 font-semibold">OUR PROMISE & CAPABILITIES</p>
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
+        <h2 class="text-5xl sm:text-6xl font-serif-custom">What we show, <span class="text-sky-600">is what we deliver.</span></h2>
+        <p class="text-slate-600 max-w-md text-sm mt-4 md:mt-0">Transparent execution, zero technical barriers, and exceptional digital growth tailored for modern founders.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="glass-panel rounded-3xl p-8 bg-white/60 border border-sky-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <span class="text-3xl mb-4 block">🎯</span>
+            <h3 class="text-2xl font-serif-custom text-slate-900 mb-2">Absolute Transparency</h3>
+            <p class="text-slate-600 text-sm leading-relaxed">What you see is exactly what you get. We uphold complete honesty and honor every commitment we make to your brand.</p>
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-8 bg-white/60 border border-sky-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <span class="text-3xl mb-4 block">🤖</span>
+            <h3 class="text-2xl font-serif-custom text-slate-900 mb-2">Zero-Code AI Integration</h3>
+            <p class="text-slate-600 text-sm leading-relaxed">No coding experience required. We seamlessly integrate advanced AI solutions into your workflow so you don't have to touch a single line of code.</p>
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-8 bg-white/60 border border-sky-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <span class="text-3xl mb-4 block">⚡</span>
+            <h3 class="text-2xl font-serif-custom text-slate-900 mb-2">Effortless Execution</h3>
+            <p class="text-slate-600 text-sm leading-relaxed">We simplify complex technical workflows, making advanced digital tools accessible and effortless for non-technical founders.</p>
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-8 bg-white/60 border border-sky-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <span class="text-3xl mb-4 block">💎</span>
+            <h3 class="text-2xl font-serif-custom text-slate-900 mb-2">Affordable Pricing</h3>
+            <p class="text-slate-600 text-sm leading-relaxed">High-end digital engineering shouldn't break the bank. We offer premium, high-ROAS systems at a price that scaling startups can easily afford.</p>
+          </div>
+        </div>
+
+        <div class="md:col-span-2 glass-panel rounded-3xl p-8 bg-white/60 border border-sky-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <span class="text-3xl mb-4 block">🌐</span>
+            <h3 class="text-2xl font-serif-custom text-slate-900 mb-2">Live Proof: Our Own Platform</h3>
+            <p class="text-slate-600 text-sm leading-relaxed">Experience our craftsmanship firsthand. This live website itself serves as a real-world example of our UI/UX design, speed, and backend automation capabilities.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom CTA Callout -->
+    <section class="relative z-10 py-20 px-6 max-w-7xl mx-auto w-full mb-12">
+      <div class="glass-panel rounded-3xl p-12 text-center border border-sky-300 relative overflow-hidden flex flex-col items-center justify-center min-h-[380px] bg-gradient-to-br from-sky-100 to-sky-200 shadow-md">
+        <h2 class="text-5xl sm:text-7xl font-serif-custom text-slate-900 mb-4">
+          Ready to build your <br />
+          <span class="text-sky-700">growth engine?</span>
+        </h2>
+        <a href="javascript:void(0)" onclick="switchPage('reach')" class="liquid-glass rounded-full px-10 py-4 text-base text-slate-900 font-semibold hover:scale-[1.03] transition-transform inline-block bg-white shadow-md">
+          GROW NOW ↗
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= 4. STUDIO PAGE ================= -->
+  <div id="page-studio" class="page-section flex-col bg-[#f0f9ff] text-slate-900 min-h-screen">
+    <main class="pt-36 pb-12 px-6 max-w-7xl mx-auto w-full">
+      <div class="mb-16">
+        <p class="text-xs uppercase tracking-[0.2em] text-sky-700 mb-3 font-semibold">THE STUDIO</p>
+        <h1 class="text-5xl sm:text-7xl font-serif-custom text-slate-900 leading-tight mb-6">
+          Four services. <br />
+          <span class="text-sky-600">One growth engine.</span>
+        </h1>
+        <p class="text-slate-600 text-base sm:text-lg max-w-2xl leading-relaxed">
+          You don't need five agencies and a stack of tools. Loopnex is the single partner that designs, builds and runs your entire digital presence — measured against growth.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+        <div onclick="openModal('smart-website')" class="glass-panel rounded-3xl p-8 relative flex flex-col justify-start cursor-pointer min-h-[300px] group bg-white/60 border border-sky-200 hover:border-sky-400 transition-all shadow-sm">
+          <div class="flex justify-between items-start mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center border border-sky-200 group-hover:border-sky-400 transition-colors">
+              <i data-lucide="globe" class="text-sky-600"></i>
+            </div>
+            <span class="text-4xl font-serif-custom text-slate-400">01</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <h3 class="text-3xl font-serif-custom text-sky-700">Smart Website</h3>
+              <i data-lucide="external-link" class="w-4 h-4 text-slate-400 group-hover:text-slate-900 transition-colors"></i>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed">Next-gen intelligent websites engineered with high-converting AI layouts, instant smart search, and personalized visitor journeys.</p>
+          </div>
+        </div>
+
+        <div onclick="openModal('meta-ads')" class="glass-panel rounded-3xl p-8 relative flex flex-col justify-start cursor-pointer min-h-[300px] group bg-white/60 border border-sky-200 hover:border-sky-400 transition-all shadow-sm">
+          <div class="flex justify-between items-start mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center border border-sky-200 group-hover:border-sky-400 transition-colors">
+              <i data-lucide="megaphone" class="text-sky-600"></i>
+            </div>
+            <span class="text-4xl font-serif-custom text-slate-400">02</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <h3 class="text-3xl font-serif-custom text-sky-700">Meta Ads</h3>
+              <i data-lucide="external-link" class="w-4 h-4 text-slate-400 group-hover:text-slate-900 transition-colors"></i>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed">High-ROAS paid campaign management on Facebook & Instagram to print high-intent leads and direct sales for your brand.</p>
+          </div>
+        </div>
+
+        <div onclick="openModal('ai-chatbot')" class="glass-panel rounded-3xl p-8 relative flex flex-col justify-start cursor-pointer min-h-[300px] group bg-white/60 border border-sky-200 hover:border-sky-400 transition-all shadow-sm">
+          <div class="flex justify-between items-start mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center border border-sky-200 group-hover:border-sky-400 transition-colors">
+              <i data-lucide="bot" class="text-sky-600"></i>
+            </div>
+            <span class="text-4xl font-serif-custom text-slate-400">03</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <h3 class="text-3xl font-serif-custom text-sky-700">AI Chatbot</h3>
+              <i data-lucide="external-link" class="w-4 h-4 text-slate-400 group-hover:text-slate-900 transition-colors"></i>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed">24/7 autonomous digital assistants that engage website visitors, qualify leads, answer queries, and schedule appointments instantly.</p>
+          </div>
+        </div>
+
+        <div onclick="openModal('ai-loop')" class="glass-panel rounded-3xl p-8 relative flex flex-col justify-start cursor-pointer min-h-[300px] group bg-white/60 border border-sky-200 hover:border-sky-400 transition-all shadow-sm">
+          <div class="flex justify-between items-start mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center border border-sky-200 group-hover:border-sky-400 transition-colors">
+              <i data-lucide="repeat" class="text-sky-600"></i>
+            </div>
+            <span class="text-4xl font-serif-custom text-slate-400">04</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <h3 class="text-3xl font-serif-custom text-sky-700">AI Loop</h3>
+              <i data-lucide="external-link" class="w-4 h-4 text-slate-400 group-hover:text-slate-900 transition-colors"></i>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed">End-to-end automated growth loops connecting your marketing, sales, CRM, and customer follow-ups without manual repetitive work.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-3xl p-12 text-center border border-sky-300 relative overflow-hidden flex flex-col items-center justify-center min-h-[320px] mb-16 bg-gradient-to-r from-sky-100 via-sky-200 to-sky-100 shadow-md">
+        <h2 class="text-4xl sm:text-6xl font-serif-custom text-slate-900 mb-3">
+          Not sure where to start?
+        </h2>
+        <p class="text-slate-700 text-sm sm:text-base max-w-xl mb-8 leading-relaxed">
+          Book a free growth audit. We'll map the fastest path from where you are to where you want to be.
+        </p>
+        <a href="javascript:void(0)" onclick="switchPage('reach')" class="liquid-glass rounded-full px-8 py-3.5 text-sm text-slate-900 font-semibold hover:scale-[1.03] transition-transform inline-block bg-white shadow-md">
+          Get a free audit ↗
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= 5. ABOUT PAGE ================= -->
+  <div id="page-about" class="page-section flex-col bg-[#f0f9ff] text-slate-900 min-h-screen">
+    <main class="pt-36 pb-20 px-6 max-w-7xl mx-auto w-full">
+      <p class="text-xs uppercase tracking-[0.2em] text-sky-700 mb-3 font-semibold">OUR MANIFESTO</p>
+      <h1 class="text-5xl sm:text-7xl font-serif-custom text-slate-900 leading-tight mb-8">
+        We build digital <br />
+        <span class="text-sky-600">systems that grow.</span>
+      </h1>
+
+      <div class="relative glass-panel rounded-3xl overflow-hidden mb-16 h-72 sm:h-96 flex items-end p-8 sm:p-12 border border-sky-200 bg-white/60 shadow-sm">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-80" alt="Studio workspace" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+        <div class="relative z-10 text-white">
+          <h2 class="text-3xl sm:text-4xl font-serif-custom mb-2">
+            A studio obsessed with the growth of the people we work with.
+          </h2>
+          <p class="text-zinc-200 text-sm max-w-xl">
+            We operate as your embedded growth team — combining elite engineering, AI systems, and high-impact design under one unified vision.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+        <div class="glass-panel rounded-3xl p-8 sm:p-10 bg-white/60 border border-sky-200 shadow-sm">
+          <span class="text-4xl font-serif-custom text-sky-600 mb-3 block">01</span>
+          <h3 class="text-2xl font-serif-custom text-slate-900 mb-3">We serve founders, not logos.</h3>
+          <p class="text-slate-600 text-sm leading-relaxed">
+            Loopnex exists for small and growing business owners — the people who wear every hat and still find time to dream bigger. We build the digital systems that let them compete with brands ten times their size.
+          </p>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-8 sm:p-10 bg-white/60 border border-sky-200 shadow-sm">
+          <span class="text-4xl font-serif-custom text-sky-600 mb-3 block">02</span>
+          <h3 class="text-2xl font-serif-custom text-slate-900 mb-3">Outcomes over aesthetics.</h3>
+          <p class="text-slate-600 text-sm leading-relaxed">
+            A beautiful website that doesn't book appointments is decoration. We start from the number you want to move — leads, bookings, followers, sales — and design every pixel around that goal.
+          </p>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-8 sm:p-10 bg-white/60 border border-sky-200 shadow-sm">
+          <span class="text-4xl font-serif-custom text-sky-600 mb-3 block">03</span>
+          <h3 class="text-2xl font-serif-custom text-slate-900 mb-3">One partner, the whole stack.</h3>
+          <p class="text-slate-600 text-sm leading-relaxed">
+            Web, AI, and ads under a single roof. No hand-offs, no finger-pointing, no five invoices. Just one team accountable for your growth from first click to closed sale.
+          </p>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-8 sm:p-10 bg-white/60 border border-sky-200 shadow-sm">
+          <span class="text-4xl font-serif-custom text-sky-600 mb-3 block">04</span>
+          <h3 class="text-2xl font-serif-custom text-slate-900 mb-3">Built to move fast.</h3>
+          <p class="text-slate-600 text-sm leading-relaxed">
+            Momentum compounds. We ship in weeks, learn from real data, and keep tuning. "Grow without limits" is the operating principle behind every project we take on.
+          </p>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-3xl p-12 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[320px] bg-gradient-to-br from-sky-100 to-sky-200 border border-sky-300 shadow-md">
+        <h2 class="text-4xl sm:text-6xl font-serif-custom text-slate-900 mb-8">
+          Let's grow, <span class="text-sky-700">without limits.</span>
+        </h2>
+        <a href="javascript:void(0)" onclick="switchPage('reach')" class="liquid-glass rounded-full px-8 py-3.5 text-sm text-slate-900 font-semibold hover:scale-[1.03] transition-transform inline-block bg-white shadow-md">
+          Start a conversation
+        </a>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ================= 6. DISCOUNT & OFFERS PAGE ================= -->
+  <div id="page-offers" class="page-section flex-col bg-[#f0f9ff] text-slate-900 min-h-screen">
+    <main class="pt-36 pb-20 px-6 max-w-7xl mx-auto w-full">
+      <p class="text-xs uppercase tracking-[0.2em] text-sky-700 mb-2 font-semibold">SPECIAL DEALS</p>
+      <h1 class="text-5xl sm:text-7xl font-serif-custom text-slate-900 mb-10">Discount & <span class="text-sky-600">Offers</span></h1>
+      <div class="glass-panel rounded-3xl p-8 max-w-xl bg-white/70 border border-sky-200 shadow-sm">
+        <h3 class="text-3xl font-serif-custom text-slate-900 mb-2">Smart Website + AI Chatbot Bundle</h3>
+        <p class="text-slate-600 text-sm mb-4">Get 20% OFF on website development bundled with an automated AI Chatbot.</p>
+        
+        <!-- COPY COUPON CODE SECTION -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+          <span id="coupon-code" class="text-2xl font-serif-custom text-sky-700 font-semibold bg-sky-50 px-4 py-2 rounded-xl border border-sky-200">LOOPNEX20</span>
+          <button onclick="copyCouponCode()" class="liquid-glass rounded-xl px-5 py-2.5 text-xs font-semibold bg-sky-600 text-white hover:bg-sky-700 transition-all shadow-md">Copy Code 📋</button>
+          <span id="copy-status" class="text-xs text-emerald-600 font-medium"></span>
+        </div>
+
+        <a href="javascript:void(0)" onclick="switchPage('reach')" class="liquid-glass rounded-full px-6 py-2.5 text-xs text-slate-900 font-medium inline-block hover:scale-105 transition-transform bg-white shadow-sm">Claim Discount ↗</a>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= 7. REACH US PAGE ================= -->
+  <div id="page-reach" class="page-section flex-col bg-[#f0f9ff] text-slate-900 min-h-screen">
+    <main class="pt-36 pb-20 px-6 max-w-7xl mx-auto w-full">
+      <p class="text-xs uppercase tracking-[0.2em] text-sky-700 mb-3 font-semibold">REACH US</p>
+      <h1 class="text-5xl sm:text-7xl font-serif-custom text-slate-900 mb-12">
+        Let's build your <br />
+        <span class="text-sky-600">growth engine.</span>
+      </h1>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8">
+        
+        <!-- Live Working Enquiry Form -->
+        <div class="glass-panel rounded-3xl p-8 sm:p-10 bg-white/60 border border-sky-200 shadow-sm">
+          <form id="reach-us-form" class="space-y-6" onsubmit="handleEnquiryForm(event)">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-xs font-semibold tracking-widest text-sky-800 mb-2 uppercase">Name</label>
+                <input id="enquiry-name" type="text" placeholder="Your name" class="w-full bg-white border border-sky-200 focus:border-sky-500 outline-none rounded-xl p-4 text-slate-900 text-sm shadow-sm" required />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold tracking-widest text-sky-800 mb-2 uppercase">Email</label>
+                <input id="enquiry-email" type="email" placeholder="you@company.com" class="w-full bg-white border border-sky-200 focus:border-sky-500 outline-none rounded-xl p-4 text-slate-900 text-sm shadow-sm" required />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold tracking-widest text-sky-800 mb-2 uppercase">What do you need?</label>
+              <div class="relative">
+                <select id="enquiry-service" class="w-full bg-white border border-sky-200 outline-none rounded-xl p-4 text-slate-900 text-sm appearance-none cursor-pointer shadow-sm" required>
+                  <option value="" disabled selected class="text-slate-400">Select a service</option>
+                  <option value="Smart Website">Smart Website</option>
+                  <option value="AI Chatbot & Automation">AI Chatbot & Automation</option>
+                  <option value="Digital Solutions">Digital Solutions</option>
+                  <option value="Social Growth + Meta Ads">Social Growth + Meta Ads</option>
+                  <option value="Not sure yet — need guidance">Not sure yet — need guidance</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold tracking-widest text-sky-800 mb-2 uppercase">Message</label>
+              <textarea id="enquiry-message" rows="4" placeholder="Tell us about your business and where you want to grow..." class="w-full bg-white border border-sky-200 outline-none rounded-xl p-4 text-slate-900 text-sm resize-none shadow-sm" required></textarea>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <button type="submit" class="liquid-glass rounded-full px-8 py-3.5 text-slate-900 font-semibold text-sm hover:scale-[1.02] transition-transform flex items-center gap-2 bg-white shadow-md">
+                Send message <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+              <p id="form-status-msg" class="text-xs text-sky-700 font-medium"></p>
+            </div>
+            
+          </form>
+        </div>
+
+        <div class="space-y-4">
+          <div class="glass-panel rounded-3xl p-6 flex items-start gap-4 bg-white/60 border border-sky-200 shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-sky-100 border border-sky-200 flex items-center justify-center shrink-0">
+              <i data-lucide="mail" class="w-5 h-5 text-sky-600"></i>
+            </div>
+            <div class="pt-1">
+              <p class="text-xs text-sky-800 font-semibold tracking-widest mb-1 uppercase">Email</p>
+              <p class="text-slate-900 text-sm font-medium">loopnexstore@gmail.com</p>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-3xl p-6 flex items-start gap-4 bg-white/60 border border-sky-200 shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-sky-100 border border-sky-200 flex items-center justify-center shrink-0">
+              <i data-lucide="globe" class="w-5 h-5 text-sky-600"></i>
+            </div>
+            <div class="pt-1">
+              <p class="text-xs text-sky-800 font-semibold tracking-widest mb-1 uppercase">Digital</p>
+              <p class="text-slate-900 text-sm font-medium">Remote-first · Serving worldwide</p>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-3xl p-6 flex items-start gap-4 bg-white/60 border border-sky-200 shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-sky-100 border border-sky-200 flex items-center justify-center shrink-0">
+              <i data-lucide="clock" class="w-5 h-5 text-sky-600"></i>
+            </div>
+            <div class="pt-1">
+              <p class="text-xs text-sky-800 font-semibold tracking-widest mb-1 uppercase">Response</p>
+              <p class="text-slate-900 text-sm font-medium">Within 24 hours</p>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-3xl p-8 mt-2 border border-sky-300 bg-gradient-to-br from-sky-100 to-sky-200 shadow-sm">
+            <p class="text-slate-900 font-serif-custom text-2xl leading-relaxed">
+              "The best time to start growing was yesterday. The second best time is <span class="text-sky-700 italic">right now.</span>"
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= 8. TERMS PAGE ================= -->
+  <div id="page-terms" class="page-section flex-col bg-[#f0f9ff] text-slate-900 min-h-screen">
+    <main class="pt-36 pb-20 px-6 max-w-5xl mx-auto w-full">
+      <h1 class="text-5xl font-serif-custom text-slate-900 mb-8">Terms, Guidelines & <span class="text-sky-600">Scope of Work</span></h1>
+      <div class="glass-panel rounded-3xl p-8 space-y-4 text-sm text-slate-700 bg-white/60 border border-sky-200 shadow-sm">
+        <p>✦ <strong>1. Transparency:</strong> Complete clarity in costs, no hidden fees.</p>
+        <p>✦ <strong>2. Dedicated Contact:</strong> Direct dedicated project manager for direct communication.</p>
+        <p>✦ <strong>3. Data Security:</strong> 100% confidential and secure client data.</p>
+        <p>✦ <strong>4. Prompt Response:</strong> Resolution or answer within 24 hours.</p>
+        <p>✦ <strong>5. Continuous Support:</strong> Technical assistance free for a set period.</p>
+        <p>✦ <strong>6. Quality Guarantee:</strong> High standards maintained for results.</p>
+        <p>✦ <strong>7. Customized Solutions:</strong> Tailored specifically to your business needs.</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= MODAL DETAIL POPUP ================= -->
+  <div id="detail-modal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+    <div class="glass-panel bg-white/95 border border-sky-300 rounded-3xl max-w-2xl w-full p-8 sm:p-10 relative shadow-2xl">
+      <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-500 hover:text-slate-900 p-2 rounded-full hover:bg-sky-100">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+
+      <span id="modal-num" class="text-xs uppercase tracking-widest text-sky-600 font-semibold mb-2 block"></span>
+      <h2 id="modal-title" class="text-4xl font-serif-custom text-slate-900 mb-4"></h2>
+      <p id="modal-desc" class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6"></p>
+
+      <div class="border-t border-sky-200 pt-6 mb-8">
+        <h4 class="text-xs uppercase tracking-wider text-sky-800 mb-3 font-semibold">Key Capabilities & Deliverables:</h4>
+        <ul id="modal-list" class="space-y-2 text-sm text-slate-700"></ul>
+      </div>
+
+      <div class="flex gap-4">
+        <a href="javascript:void(0)" onclick="closeModal(); switchPage('reach');" class="liquid-glass rounded-full px-6 py-3 text-sm text-slate-900 font-semibold hover:scale-[1.02] transition-transform flex-1 text-center bg-white shadow-md">
+          Get Started with <span id="modal-btn-text"></span>
+        </a>
+        <button onclick="closeModal()" class="px-6 py-3 rounded-full text-sm text-slate-600 hover:text-slate-900 border border-sky-300 bg-sky-50">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= GLOBAL FOOTER (ALL SOCIAL LINKS UPDATED) ================= -->
+  <footer id="main-footer" class="relative z-10 px-4 sm:px-6 pb-8 pt-12 mt-auto hidden bg-[#f0f9ff]">
+    <div class="glass-panel rounded-3xl max-w-7xl mx-auto px-8 sm:px-12 py-12 bg-white/70 border border-sky-200 backdrop-blur-md shadow-sm">
+      <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-12 items-start">
+        
+        <div>
+          <!-- Footer Logo -->
+          <div class="flex items-center gap-3 mb-4">
+            <svg width="32" height="32" viewBox="0 0 160 160">
+              <defs>
+                <linearGradient id="lx-gold-ftr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFC93C" /><stop offset="100%" stop-color="#FF9F1C" /></linearGradient>
+                <linearGradient id="lx-yellow-ftr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFF04C" /><stop offset="100%" stop-color="#FFD93C" /></linearGradient>
+                <linearGradient id="lx-brown-ftr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#A67C52" /><stop offset="100%" stop-color="#6B4423" /></linearGradient>
+                <linearGradient id="lx-blue-ftr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2E9BF5" /><stop offset="100%" stop-color="#6FD4E8" /></linearGradient>
+                <linearGradient id="lx-green-ftr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1FA35C" /><stop offset="100%" stop-color="#14532D" /></linearGradient>
+              </defs>
+              <g transform="translate(80,80)">
+                <g>
+                  <animateTransform attributeName="transform" type="rotate" values="0;360" keyTimes="0;1" calcMode="spline" keySplines="0.37 0 0.63 1" dur="16s" repeatCount="indefinite" />
+                  <g transform="rotate(0)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-gold-ftr)" /></g>
+                  <g transform="rotate(72)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-yellow-ftr)" /></g>
+                  <g transform="rotate(144)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-brown-ftr)" /></g>
+                  <g transform="rotate(216)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-blue-ftr)" /></g>
+                  <g transform="rotate(288)"><path d="M 0 0 C 6 -14, 4 -30, -10 -32 C -24 -34, -30 -20, -20 -8 C -12 2, -6 4, 0 0 Z" fill="url(#lx-green-ftr)" /></g>
+                </g>
+              </g>
+            </svg>
+            <span class="text-3xl font-serif-custom text-slate-900">Loopnex<sup class="text-xs">®</sup></span>
+          </div>
+          <p class="text-slate-600 text-sm max-w-sm mb-6 leading-relaxed">
+            An ultimate digital growth studio for founders who refuse to stay small. Websites, AI and ads — engineered for real outcomes.
+          </p>
+          <p class="text-2xl font-serif-custom text-sky-700">Grow without limits.</p>
+        </div>
+
+        <div>
+          <p class="text-xs uppercase tracking-widest text-sky-800 font-semibold mb-4">EXPLORE</p>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="javascript:void(0)" onclick="switchPage('home')" class="text-slate-600 hover:text-sky-600 transition-colors">Home</a></li>
+            <li><a href="javascript:void(0)" onclick="switchPage('studio')" class="text-slate-600 hover:text-sky-600 transition-colors">Studio</a></li>
+            <li><a href="javascript:void(0)" onclick="switchPage('about')" class="text-slate-600 hover:text-sky-600 transition-colors">About</a></li>
+            <li><a href="javascript:void(0)" onclick="switchPage('offers')" class="text-slate-600 hover:text-sky-600 transition-colors">Discount & Offers</a></li>
+            <li><a href="javascript:void(0)" onclick="switchPage('reach')" class="text-slate-600 hover:text-sky-600 transition-colors">Reach Us</a></li>
+            <li><a href="javascript:void(0)" onclick="switchPage('terms')" class="text-slate-600 hover:text-sky-600 transition-colors">Terms & Guidelines</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="text-xs uppercase tracking-widest text-sky-800 font-semibold mb-4">FOLLOW & CONNECT</p>
+          
+          <!-- SOCIAL LINKS -->
+          <div class="flex flex-wrap gap-3 mb-5">
+            <!-- LinkedIn -->
+            <a href="https://www.linkedin.com/company/loopnex-hub/" target="_blank" title="LinkedIn" class="liquid-glass w-10 h-10 rounded-full flex items-center justify-center text-slate-700 hover:scale-105 transition-transform bg-white border border-sky-200 shadow-sm">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </a>
+            <!-- WhatsApp -->
+            <a href="https://wa.me/916386449592" target="_blank" title="WhatsApp" class="liquid-glass w-10 h-10 rounded-full flex items-center justify-center text-slate-700 hover:scale-105 transition-transform bg-white border border-sky-200 shadow-sm">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.198-.198.347-.764.966-.937 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            </a>
+            <!-- Twitter -->
+            <a href="https://x.com/loopn_ex" target="_blank" title="Twitter" class="liquid-glass w-10 h-10 rounded-full flex items-center justify-center text-slate-700 hover:scale-105 transition-transform bg-white border border-sky-200 shadow-sm">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <!-- Instagram -->
+            <a href="https://instagram.com/loopn_ex" target="_blank" title="Instagram" class="liquid-glass w-10 h-10 rounded-full flex items-center justify-center text-slate-700 hover:scale-105 transition-transform bg-white border border-sky-200 shadow-sm">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <!-- Threads -->
+            <a href="https://www.threads.net/@loopn_ex" target="_blank" title="Threads" class="liquid-glass w-10 h-10 rounded-full flex items-center justify-center text-slate-700 hover:scale-105 transition-transform bg-white border border-sky-200 shadow-sm">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.186 24c-3.125 0-5.679-1.02-7.592-3.033-1.92-2.022-2.887-4.808-2.887-8.311 0-3.513.974-6.307 2.91-8.351C7.42 2.246 9.98 1.231 13.13 1.231c3.275 0 5.86 1.025 7.707 3.064 1.838 2.031 2.768 4.862 2.768 8.442 0 3.32-.821 6.035-2.454 8.106-1.637 2.079-3.953 3.167-6.891 3.257h-.084zm-.18-2.148c2.252-.064 3.991-.884 5.17-2.43 1.187-1.558 1.785-3.733 1.785-6.479 0-2.812-.524-4.912-1.564-6.264-1.049-1.362-2.651-2.053-4.773-2.053-2.217 0-3.931.75-5.093 2.232-1.151 1.47-1.734 3.633-1.734 6.456 0 2.802.585 4.954 1.745 6.417 1.169 1.472 2.89 2.215 5.131 2.219h.034zm-.233-4.739c-1.391-.044-2.417-.417-3.045-1.107-.636-.698-.958-1.724-.958-3.052 0-1.28.309-2.27.917-2.955.617-.696 1.621-1.057 2.99-1.071 1.341-.014 2.29.324 2.83 1.002.549.689.827 1.642.827 2.846 0 1.229-.272 2.203-.807 2.906-.543.715-1.503 1.073-2.864 1.131z"/></svg>
+            </a>
+          </div>
+
+          <div class="space-y-1.5 text-sm text-slate-700">
+            <p>WhatsApp: <a href="https://wa.me/916386449592" target="_blank" class="text-sky-700 hover:underline">+91 6386449592</a></p>
+            <p>Gmail: <a href="mailto:loopnexstore@gmail.com" class="text-sky-700 hover:underline">loopnexstore@gmail.com</a></p>
+          </div>
+        </div>
+
+      </div>
+      
+      <div class="mt-12 pt-6 border-t border-sky-200 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500">
+        <span>© 2026 Loopnex Studio. All rights reserved.</span>
+        <span>Designed with intent · Built for growth</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- External Frontend Controller -->
+  <script src="app.js" defer></script>
+</body>
+</html>
