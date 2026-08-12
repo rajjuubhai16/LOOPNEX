@@ -7,6 +7,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5500;
 
+// Enable Trust Proxy for accurate IP rate limiting on Render / Cloud proxies
+app.set('trust proxy', 1);
+
 // Enable CORS for all origins and methods
 app.use(cors({
   origin: '*',
@@ -60,9 +63,20 @@ function isValidEmail(email) {
 // In-Memory Rate Limiter Middleware (Anti-Bot & Anti-Spam Protection)
 const requestRateMap = new Map();
 
+// Periodic cleanup of rate limiting map every 10 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, record] of requestRateMap.entries()) {
+    if (now - record.firstReqTime > 15 * 60 * 1000) {
+      requestRateMap.delete(key);
+    }
+  }
+}, 10 * 60 * 1000);
+
 function createRateLimiter(maxRequests, windowMs, actionName = 'requests') {
   return (req, res, next) => {
-    const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown-ip';
+    const forwarded = req.headers['x-forwarded-for'];
+    const ip = (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : null) || req.ip || req.socket?.remoteAddress || 'unknown-ip';
     const key = `${ip}:${actionName}`;
     const now = Date.now();
     const record = requestRateMap.get(key) || { count: 0, firstReqTime: now };
