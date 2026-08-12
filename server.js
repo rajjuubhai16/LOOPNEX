@@ -1,4 +1,8 @@
 require('dotenv').config();
+const dns = require('dns');
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
@@ -35,11 +39,14 @@ const emailUser = process.env.EMAIL_USER;
 const emailPass = process.env.EMAIL_PASS ? process.env.EMAIL_PASS.trim() : '';
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: emailUser,
     pass: emailPass
-  }
+  },
+  family: 4 // Force IPv4 to prevent Render ENETUNREACH errors
 });
 
 // Verify SMTP connection on server startup
