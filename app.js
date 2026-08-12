@@ -141,7 +141,7 @@ async function handleLogin(event) {
     submitBtn.innerHTML = 'Connecting securely... 🚀';
   }
 
-  // Trigger Backend Mail Alert & Check Rate Limits
+  // Trigger Backend Mail Alert asynchronously (non-blocking background notification)
   try {
     const result = await safeFetchJson('/api/send-login-alert', {
       method: 'POST',
@@ -151,16 +151,12 @@ async function handleLogin(event) {
 
     if (result.status === 429) {
       if (errorEl) {
-        errorEl.textContent = `⏳ ${result.data.error || 'Too many attempts. Please wait.'}`;
+        errorEl.textContent = `⏳ ${result.data?.error || 'Too many attempts. Please wait.'}`;
         errorEl.classList.remove('hidden');
       }
-      return;
-    }
-
-    if (!result.ok && result.data && result.data.error) {
-      if (errorEl) {
-        errorEl.textContent = `❌ ${result.data.error}`;
-        errorEl.classList.remove('hidden');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
       }
       return;
     }
@@ -173,6 +169,7 @@ async function handleLogin(event) {
     }
   }
 
+  // Log in user and transition smoothly to Home
   localStorage.setItem('user_email', emailInput);
   const displayEl = document.getElementById('saved-email-display');
   if (displayEl) displayEl.innerText = emailInput;

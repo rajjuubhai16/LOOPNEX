@@ -38,25 +38,110 @@ app.use(express.static(__dirname));
 const emailUser = process.env.EMAIL_USER;
 const emailPass = process.env.EMAIL_PASS ? process.env.EMAIL_PASS.trim() : '';
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: emailUser,
-    pass: emailPass
-  },
-  family: 4 // Force IPv4 to prevent Render ENETUNREACH errors
-});
+// Nodemailer SMTP Transporter
+let transporter = null;
+if (emailUser && emailPass) {
+  try {
+    transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: emailUser,
+        pass: emailPass
+      },
+      family: 4,
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 10000
+    });
 
-// Verify SMTP connection on server startup
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('❌ Gmail SMTP Error:', error.message);
-  } else {
-    console.log('✅ Gmail SMTP Server is ready to send emails');
+    transporter.verify((error) => {
+      if (error) {
+        console.warn('⚠️ SMTP Verify Notice (Expected on cloud free tiers like Render that block port 465/587):', error.message);
+      } else {
+        console.log('✅ Gmail SMTP Server is connected and ready');
+      }
+    });
+  } catch (e) {
+    console.warn('⚠️ Could not initialize Nodemailer transporter:', e.message);
   }
-});
+}
+
+// Unified Cloud-Safe Email Dispatcher (HTTPS REST API & SMTP fallback)
+async function sendEmailNotification({ to, replyTo, subject, text, html, fromName = 'Loopnex' }) {
+  // 1. Resend API (Recommended for Render Free Tier - communicates via HTTPS port 443)
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const fromAddr = process.env.RESEND_FROM || `${fromName} <onboarding@resend.dev>`;
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY.trim()}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: fromAddr,
+          to: Array.isArray(to) ? to : [to],
+          reply_to: replyTo,
+          subject,
+          text,
+          html
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Resend delivery rejected');
+      console.log('✅ Email delivered via Resend API (ID:', data.id, ')');
+      return { success: true, provider: 'resend', id: data.id };
+    } catch (err) {
+      console.warn('⚠️ Resend API failed, checking fallbacks:', err.message);
+    }
+  }
+
+  // 2. Brevo REST API (HTTPS port 443)
+  if (process.env.BREVO_API_KEY) {
+    try {
+      const senderEmail = process.env.BREVO_SENDER || emailUser || 'loopnexstore@gmail.com';
+      const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': process.env.BREVO_API_KEY.trim(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: { name: fromName, email: senderEmail },
+          to: [{ email: to }],
+          replyTo: replyTo ? { email: replyTo } : undefined,
+          subject,
+          textContent: text,
+          htmlContent: html
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Brevo delivery rejected');
+      console.log('✅ Email delivered via Brevo API');
+      return { success: true, provider: 'brevo', id: data.messageId };
+    } catch (err) {
+      console.warn('⚠️ Brevo API failed, checking fallbacks:', err.message);
+    }
+  }
+
+  // 3. Nodemailer SMTP (Localhost or VPS/Cloud with open SMTP ports)
+  if (transporter && emailUser && emailPass) {
+    const info = await transporter.sendMail({
+      from: `"${fromName}" <${emailUser}>`,
+      to,
+      replyTo,
+      subject,
+      text,
+      html
+    });
+    console.log('✅ Email delivered via Nodemailer SMTP (ID:', info.messageId, ')');
+    return { success: true, provider: 'nodemailer', id: info.messageId };
+  }
+
+  throw new Error('No working email provider available. Set RESEND_API_KEY or EMAIL_USER/EMAIL_PASS.');
+}
 
 // Helper: Strict Email Validation Regex (RFC standard)
 function isValidEmail(email) {
@@ -132,7 +217,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });
 
-// Login Alert API with Rate Limiting & Strict Email Validation
+// Login Alert API with Rate Limiting & Non-Blocking User Experience
 app.post('/api/send-login-alert', loginRateLimiter, async (req, res) => {
   const { email } = req.body;
   if (!email || !isValidEmail(email)) {
@@ -140,40 +225,40 @@ app.post('/api/send-login-alert', loginRateLimiter, async (req, res) => {
   }
 
   const cleanEmail = email.trim().toLowerCase();
+  const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  const recipient = process.env.NOTIFICATION_EMAIL || process.env.CONTACT_EMAIL || emailUser || 'loopnexstore@gmail.com';
 
-  try {
-    const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-    const mailOptions = {
-      from: `"Loopnex Alert" <${emailUser}>`,
-      to: emailUser,
-      replyTo: cleanEmail,
-      subject: `🚀 New User Logged In: ${cleanEmail}`,
-      text: `A new user has logged in:\n\nEmail: ${cleanEmail}\nTime: ${timestamp} IST`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e0f2fe; border-radius: 16px; background-color: #f0f9ff;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <h1 style="color: #0369a1; font-size: 24px; margin: 0;">Loopnex Studio</h1>
-            <p style="color: #64748b; font-size: 14px; margin-top: 4px;">User Sign-in Activity</p>
-          </div>
-          <div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #bae6fd;">
-            <h2 style="color: #0f172a; font-size: 18px; margin-top: 0;">🚀 New User Connected</h2>
-            <p style="font-size: 15px; color: #334155; margin: 10px 0;"><strong>User Email:</strong> <a href="mailto:${cleanEmail}" style="color: #0284c7;">${cleanEmail}</a></p>
-            <p style="font-size: 13px; color: #64748b; margin: 10px 0;"><strong>Timestamp:</strong> ${timestamp} (IST)</p>
-          </div>
-          <p style="text-align: center; font-size: 12px; color: #94a3b8; margin-top: 20px;">
-            Loopnex Automated Notification System
-          </p>
+  // Asynchronously dispatch notification without ever blocking user login flow
+  sendEmailNotification({
+    to: recipient,
+    replyTo: cleanEmail,
+    subject: `🚀 New User Logged In: ${cleanEmail}`,
+    text: `A new user has logged in:\n\nEmail: ${cleanEmail}\nTime: ${timestamp} IST`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e0f2fe; border-radius: 16px; background-color: #f0f9ff;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #0369a1; font-size: 24px; margin: 0;">Loopnex Studio</h1>
+          <p style="color: #64748b; font-size: 14px; margin-top: 4px;">User Sign-in Activity</p>
         </div>
-      `
-    };
+        <div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #bae6fd;">
+          <h2 style="color: #0f172a; font-size: 18px; margin-top: 0;">🚀 New User Connected</h2>
+          <p style="font-size: 15px; color: #334155; margin: 10px 0;"><strong>User Email:</strong> <a href="mailto:${cleanEmail}" style="color: #0284c7;">${cleanEmail}</a></p>
+          <p style="font-size: 13px; color: #64748b; margin: 10px 0;"><strong>Timestamp:</strong> ${timestamp} (IST)</p>
+        </div>
+        <p style="text-align: center; font-size: 12px; color: #94a3b8; margin-top: 20px;">
+          Loopnex Automated Notification System
+        </p>
+      </div>
+    `,
+    fromName: 'Loopnex Alert'
+  }).then(result => {
+    console.log(`✅ Login alert delivered for ${cleanEmail} via ${result.provider}`);
+  }).catch(err => {
+    console.warn(`ℹ️ Login alert notification skipped (${err.message}). User login succeeded uninterrupted.`);
+  });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Login alert sent for:', cleanEmail, info.messageId);
-    res.json({ success: true, messageId: info.messageId });
-  } catch (error) {
-    console.error('❌ Error sending login alert:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
+  // Always return success so the user's login and dashboard entry is never interrupted
+  res.json({ success: true, message: 'Login recorded successfully' });
 });
 
 // Enquiry API with Rate Limiting & Strict Validation
@@ -192,15 +277,15 @@ app.post('/api/send-enquiry', enquiryRateLimiter, async (req, res) => {
   const cleanEmail = email.trim().toLowerCase();
   const cleanService = service.trim().slice(0, 100);
   const cleanMessage = message.trim().slice(0, 2000);
+  const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  const recipient = process.env.CONTACT_EMAIL || process.env.NOTIFICATION_EMAIL || emailUser || 'loopnexstore@gmail.com';
 
   try {
-    const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-    const mailOptions = {
-      from: `"Loopnex Enquiry - ${name}" <${emailUser}>`,
-      to: emailUser,
-      replyTo: email,
-      subject: `🔔 New Enquiry from ${name} (${service})`,
-      text: `New Client Enquiry:\n\nName: ${name}\nEmail: ${email}\nService: ${service}\nMessage:\n${message}\n\nReceived at: ${timestamp} IST`,
+    const result = await sendEmailNotification({
+      to: recipient,
+      replyTo: cleanEmail,
+      subject: `🔔 New Enquiry from ${cleanName} (${cleanService})`,
+      text: `New Client Enquiry:\n\nName: ${cleanName}\nEmail: ${cleanEmail}\nService: ${cleanService}\nMessage:\n${cleanMessage}\n\nReceived at: ${timestamp} IST`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e0f2fe; border-radius: 16px; background-color: #f0f9ff;">
           <div style="text-align: center; margin-bottom: 24px;">
@@ -216,15 +301,15 @@ app.post('/api/send-enquiry', enquiryRateLimiter, async (req, res) => {
             <table style="width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px;">
               <tr>
                 <td style="padding: 8px 0; color: #64748b; width: 110px;"><strong>Client Name:</strong></td>
-                <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${name}</td>
+                <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${cleanName}</td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; color: #64748b;"><strong>Email:</strong></td>
-                <td style="padding: 8px 0;"><a href="mailto:${email}" style="color: #0284c7; text-decoration: none; font-weight: 600;">${email}</a></td>
+                <td style="padding: 8px 0;"><a href="mailto:${cleanEmail}" style="color: #0284c7; text-decoration: none; font-weight: 600;">${cleanEmail}</a></td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; color: #64748b;"><strong>Service:</strong></td>
-                <td style="padding: 8px 0;"><span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 13px;">${service}</span></td>
+                <td style="padding: 8px 0;"><span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 13px;">${cleanService}</span></td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; color: #64748b;"><strong>Time:</strong></td>
@@ -234,12 +319,12 @@ app.post('/api/send-enquiry', enquiryRateLimiter, async (req, res) => {
 
             <div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
               <h3 style="color: #0f172a; font-size: 15px; margin-bottom: 8px;">Message:</h3>
-              <div style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; color: #334155; line-height: 1.6; white-space: pre-wrap;">${message}</div>
+              <div style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; color: #334155; line-height: 1.6; white-space: pre-wrap;">${cleanMessage}</div>
             </div>
 
             <div style="margin-top: 24px; text-align: center;">
-              <a href="mailto:${email}?subject=Re: Your Enquiry with Loopnex Studio (${encodeURIComponent(service)})" style="display: inline-block; background: #0284c7; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 9999px; font-weight: 600; font-size: 14px;">
-                Reply Directly to ${name} →
+              <a href="mailto:${cleanEmail}?subject=Re: Your Enquiry with Loopnex Studio (${encodeURIComponent(cleanService)})" style="display: inline-block; background: #0284c7; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 9999px; font-weight: 600; font-size: 14px;">
+                Reply Directly to ${cleanName} →
               </a>
             </div>
           </div>
@@ -248,15 +333,24 @@ app.post('/api/send-enquiry', enquiryRateLimiter, async (req, res) => {
             © 2026 Loopnex Studio · Sent automatically from your website reach form
           </p>
         </div>
-      `
-    };
+      `,
+      fromName: `Loopnex Enquiry - ${cleanName}`
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Enquiry email sent successfully from:', name, `(${email})`, 'ID:', info.messageId);
-    res.json({ success: true, messageId: info.messageId });
+    console.log('✅ Enquiry email processed successfully from:', cleanName, `(${cleanEmail})`);
+    res.json({ success: true, message: 'Message sent successfully!' });
   } catch (error) {
-    console.error('❌ Error sending enquiry email:', error);
-    res.status(500).json({ success: false, error: error.message });
+    console.error('❌ Error sending enquiry email:', error.message);
+    
+    // Check if error is Render SMTP port block
+    if (error.code === 'ENETUNREACH' || error.code === 'ETIMEDOUT' || (error.message && error.message.includes('ENETUNREACH'))) {
+      return res.status(500).json({
+        success: false,
+        error: 'Email service temporary network restriction on cloud server. Please reach us directly on WhatsApp (+91 6386449592)!'
+      });
+    }
+
+    res.status(500).json({ success: false, error: error.message || 'Failed to send enquiry.' });
   }
 });
 
